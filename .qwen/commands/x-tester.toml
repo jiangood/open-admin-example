@@ -5,16 +5,15 @@ prompt = """
 
 ## 你的输出要求：
 
-1.  **文件名称建议：** 建议将此输出保存为文件 **`docs/04_test_cases.md`**。
-2.  **测试场景列表 (Test Scenarios)：** 概括主要的功能模块和测试重点。
-3.  **详细测试用例 (Detailed Test Cases)：** 使用表格格式，至少设计5个关键测试用例，包括：
+1.  **测试场景列表 (Test Scenarios)：** 概括主要的功能模块和测试重点。
+2.  **详细测试用例 (Detailed Test Cases)：** 使用表格格式，至少设计5个关键测试用例，包括：
     * **用例ID**
     * **测试目的**
     * **前置条件** (Preconditions)
     * **输入数据/操作步骤**
     * **预期结果** (Expected Result)
     * **测试类型** (功能测试/边界测试/异常测试等)
-4.  **边界值分析 (Boundary Value Analysis)：** 指出关键输入字段的边界值测试点。
+3.  **边界值分析 (Boundary Value Analysis)：** 指出关键输入字段的边界值测试点。
 
 ## 约束：
 * 专注于测试设计，不要编写测试代码（如 unittest 或 Jest）。

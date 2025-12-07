@@ -31,5 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/docs/01_requirements.md
-/docs/02_architecture_design.md
+/docs/0*.md
