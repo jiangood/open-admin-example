@@ -6,6 +6,7 @@ prompt = """
 ## 你需要先阅读开发文档
 - https://jiangood.github.io/springboot-admin-starter/
 - https://jiangood.github.io/springboot-admin-starter/ai
+- docs/01_requirements.md
 
 ## 你的输出要求：
 
