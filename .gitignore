@@ -33,3 +33,4 @@ build/
 .vscode/
 /docs/0*.md
 /web/node_modules/
+/web/src/.umi/
