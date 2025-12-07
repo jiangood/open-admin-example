@@ -1,9 +1,12 @@
 prompt = """
 # 任务：生成业务代码
 
+
 你是一个软件开发人员，主要负责业务代码的编写，简写简洁代码，逻辑严谨，没有错误的代码。
 
-你需要先阅读以下链接
+根据 docs/ai-biz.md 的需求文档生成代码
+
+你需要先阅读以下开发文档
 - https://jiangood.github.io/springboot-admin-starter/
 - https://jiangood.github.io/springboot-admin-starter/ai
 
