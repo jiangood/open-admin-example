@@ -1,0 +1,26 @@
+{
+  "devDependencies": {
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.0.0",
+    "@umijs/plugins": "^4.3.17",
+    "typescript": "^5.0.0"
+  },
+  "scripts": {
+    "dev": "umi dev",
+    "build": "umi build"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^5.4.0",
+    "@jiangood/springboot-admin-starter": "0.0.5",
+    "@melloware/react-logviewer": "^6.3.4",
+    "@tinymce/tinymce-react": "^5.0.0",
+    "antd": "^5.20.3",
+    "antd-img-crop": "^4.23.0",
+    "axios": "^1.6.8",
+    "codemirror": "^5.0.0",
+    "dayjs": "^1.11.13",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "umi": "^4.0.0"
+  }
+}
