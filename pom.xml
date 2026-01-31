@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.example</groupId>
-    <artifactId>springboot-admin-starter-example</artifactId>
+    <artifactId>open-admin-example</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>springboot-admin-starter-example</name>
+    <name>open-admin-example</name>
 
     <properties>
         <java.version>17</java.version>
@@ -19,8 +19,8 @@
     <dependencies>
         <dependency>
             <groupId>io.github.jiangood</groupId>
-            <artifactId>springboot-admin-starter</artifactId>
-            <version>0.0.6</version>
+            <artifactId>open-admin</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
