@@ -34,3 +34,4 @@ build/
 /docs/0*.md
 /web/node_modules/
 /web/src/.umi/
+/logs/spring.log
