@@ -4,15 +4,7 @@ import {ThemeUtils} from '@jiangood/open-admin';
 
 export default class extends React.Component {
     render() {
-        return <div
-            style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
-                background: ThemeUtils.getColor("background-color")
-            }}>
-            <Spin size='large'/>
-        </div>
+        return <Spin size='large'/>
+        
     }
 }
