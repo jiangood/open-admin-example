@@ -39,6 +39,9 @@ build/
 /web/src/.umi-production/
 /web/package-lock.json
 
+### Data ###
+/data/
+
 ### Logs ###
 /logs/
 *.log
