@@ -45,3 +45,7 @@ build/
 ### Logs ###
 /logs/
 *.log
+
+### Test Artifacts ###
+.playwright-mcp/
+*.png
