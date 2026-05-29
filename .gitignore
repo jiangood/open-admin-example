@@ -31,7 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
-/docs/0*.md
+
+### Frontend ###
 /web/node_modules/
+/web/dist/
 /web/src/.umi/
-/logs/spring.log
+
+### Logs ###
+/logs/
+*.log

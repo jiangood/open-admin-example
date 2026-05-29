@@ -1,14 +1,9 @@
 import React from "react";
 import {Card} from "antd";
+import {Page} from "@jiangood/open-admin";
 
-export default class extends React.Component {
-
-  render() {
-    return <Card>
-
-
-        自定义关于
-
-    </Card>
-  }
+export default function () {
+    return <Page>
+        <Card>关于示例系统</Card>
+    </Page>
 }

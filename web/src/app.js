@@ -1,1 +1,1 @@
-console.log('i am app.js')
+console.log('open-admin example app loaded');
