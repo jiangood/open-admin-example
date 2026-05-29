@@ -36,17 +36,27 @@ db_password: your_password
 ./mvnw spring-boot:run
 ```
 
-首次启动会自动创建数据库表和初始数据。
+首次启动会自动创建数据库表和初始数据（包括默认管理员账号）。
 
-### 4. 启动前端
+### 4. 安装框架前端依赖（首次或依赖变更时）
 
 ```bash
 cd web
 npm install
+```
+
+框架前端 `@jiangood/open-admin` 已配置为 npm 依赖，无需手动拷贝。
+
+### 5. 启动前端
+
+```bash
+cd web
 npm run dev
 ```
 
-### 5. 访问系统
+前端开发服务器运行在 8090 端口，自动代理 API 请求到后端 8080 端口。
+
+### 6. 访问系统
 
 浏览器打开 http://localhost:8090/example/
 
@@ -63,9 +73,10 @@ npm run dev
 
 ### 添加业务模块
 
-1. 在 `com.example` 包下创建 Entity、Repository、Service、Controller
-2. 在 `web/src/pages/` 下创建对应的页面组件
-3. 框架会自动扫描和注册路由
+1. **后端**：在 `com.example` 包下创建 Entity（继承 `BaseEntity`）、Repository（继承 `BaseRepository`）、Service（继承 `BaseService`）、Controller（RESTful + `@HasPermission` 权限注解）
+2. **前端**：在 `web/src/pages/` 下创建页面组件（使用框架的 ProTable、Field* 等组件快速搭建 CRUD）
+3. **菜单**：在 `src/main/resources/data/` 下创建 `menu*.yml` 文件定义菜单项，框架自动扫描注册
+4. **数据库**：JPA 根据 Entity 自动创建/更新表结构，无需手动编写 DDL
 
 ### 框架配置
 
