@@ -11,9 +11,6 @@ const proxyConfig = {
 };
 
 export default defineConfig({
-    define: {
-        SERVLET_CONTEXT: SERVLET_CONTEXT,
-    },
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
     hash: true,
     history: { type: 'hash' },
