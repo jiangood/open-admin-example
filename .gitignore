@@ -49,3 +49,4 @@ build/
 ### Test Artifacts ###
 .playwright-mcp/
 *.png
+/.claude/settings.local.json
