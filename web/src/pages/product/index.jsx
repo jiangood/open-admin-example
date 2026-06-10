@@ -48,9 +48,6 @@ export default class extends React.Component {
         {
             title: '状态',
             dataIndex: 'status',
-            render(v) {
-                return <FieldDictSelect typeCode='product_status' value={v} readOnly/>
-            }
         },
         {
             title: '图片',

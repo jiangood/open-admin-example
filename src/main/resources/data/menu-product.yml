@@ -1,7 +1,13 @@
-menu:
-  - title: 商品管理
-    icon: Shopping
+menus:
+  - id: product
+    name: 商品管理
+    icon: ShoppingOutlined
     children:
-      - title: 商品列表
+      - id: product-list
+        name: 商品列表
         path: /product
-        permission: product
+        perms:
+          - {name: 读取, code: product:read}
+          - {name: 创建, code: product:create}
+          - {name: 编辑, code: product:update}
+          - {name: 删除, code: product:delete}
