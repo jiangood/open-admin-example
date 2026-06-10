@@ -1,0 +1,7 @@
+menu:
+  - title: 商品管理
+    icon: Shopping
+    children:
+      - title: 商品列表
+        path: /product
+        permission: product
