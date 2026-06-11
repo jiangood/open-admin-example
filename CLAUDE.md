@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-open-admin-example 是一个基于 [open-admin](https://github.com/jiangood/open-admin) 框架的示例/模板项目，演示业务项目如何快速接入 open-admin 获得完整的后台管理能力。该项目的业务代码极少，核心能力由 open-admin 框架（`io.github.jiangood:open-admin:2.2.4`）提供。
+open-admin-example 是一个基于 [open-admin](https://github.com/jiangood/open-admin) 框架的示例/模板项目，演示业务项目如何快速接入 open-admin 获得完整的后台管理能力。该项目的业务代码极少，核心能力由 open-admin 框架（`io.github.jiangood:open-admin:2.4.0`）提供。
 
 框架源码在同级目录 `D:/ws/open-admin/` 中，调试和定制框架行为时需要同时参考两个项目。
 
