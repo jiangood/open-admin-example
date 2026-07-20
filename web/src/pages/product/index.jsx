@@ -81,8 +81,8 @@ export default class extends React.Component {
                 actionRef={this.tableRef}
                 toolBarRender={() => {
                     return <ButtonList>
-                        <Button perm='product:create' type='primary' onClick={this.handleAdd}>
-                            <PlusOutlined/> 新增
+                        <Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>
+                            新增
                         </Button>
                     </ButtonList>
                 }}

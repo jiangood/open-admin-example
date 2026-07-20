@@ -119,7 +119,7 @@ cd web && npm run build
 | `sys.captcha-enable` | 登录验证码 | true |
 | `sys.default-password` | 默认密码 | open-admin@1234 |
 | `sys.logo-url` | Logo 路径 | /admin/public/logo.svg |
-| `sys.file.store-type` | 文件存储类型 (local/minio) | local |
+| `sys.file.store-type` | 文件存储类型 (local/s3/custom) | local |
 
 完整配置项见框架 `SystemProperties.java`。
 
