@@ -1,0 +1,14 @@
+## 示例项目菜单扩展。框架预设菜单位于 open-admin 框架的 application-menu.yml。
+menus:
+  product:
+    name: 商品管理
+    icon: ShoppingOutlined
+  product-list:
+    pid: product
+    name: 商品列表
+    path: /product
+    perms:
+      - {name: 读取, code: product:read}
+      - {name: 创建, code: product:create}
+      - {name: 编辑, code: product:update}
+      - {name: 删除, code: product:delete}

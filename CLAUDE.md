@@ -59,8 +59,8 @@ Controller → Service → Repository (JPA) → Entity (MySQL)
 
 ### 菜单系统
 
-- 通过 `src/main/resources/data/menu*.yml` YAML 文件定义菜单树
-- 框架自动扫描 `classpath*:data/menu*.yml` 生成菜单（`MenuYamlLoader`）
+- 通过 `src/main/resources/application-menu*.yml` YAML 文件定义菜单（Map 格式，key 为菜单 id，pid 表达父子关系）
+- 框架自动扫描 `classpath*:application-menu*.yml` 合并菜单（`SysMenuRepositoryImpl`）
 
 ### 前端框架 (web/src/framework → npm 包 @jiangood/open-admin)
 
