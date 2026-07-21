@@ -28,7 +28,7 @@ Product extends BaseEntity
 
 ### Menu
 
-`src/main/resources/data/menu-product.yml` — 商品管理 → 商品列表 (path: /product, permission: product)
+`src/main/resources/application-menu-product.yml` — 商品管理 → 商品列表 (path: /product, permission: product)
 
 ### Frontend (1 page)
 
