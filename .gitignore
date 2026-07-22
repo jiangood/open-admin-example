@@ -50,3 +50,4 @@ build/
 .playwright-mcp/
 *.png
 /.claude/settings.local.json
+/docs/superpowers/
