@@ -1,1 +1,0 @@
-console.log('open-admin example app loaded');
