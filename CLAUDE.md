@@ -129,3 +129,5 @@ cd web && npm run build
 ## Framework Source Code
 
 框架源码在 `D:/ws/open-admin/` 中，其 CLAUDE.md 包含更详细的架构说明。修改框架行为时，需在框架项目中编译安装后再更新 example 项目的依赖版本。
+
+> **注意：** 当前 `web/package.json` 中 `@jiangood/open-admin` 使用 `file:../../open-admin/web` 本地路径依赖（因为 npm 上 2.5.9 版本尚未包含 vite-plugin）。框架发布新版后需改回版本号。
