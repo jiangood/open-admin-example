@@ -1,3 +1,12 @@
+### Task 2: Update package.json
+
+**File:** Modify `web/package.json`
+
+- [ ] **Step 1: Update dependencies and scripts**
+
+Replace scripts (`umi dev` → `vite`, `umi build` → `vite build`), remove `umi` and `@umijs/plugins`, add `vite`, `@vitejs/plugin-react`, `less`, `typescript`:
+
+```json
 {
   "name": "open-admin-example",
   "version": "0.0.1",
@@ -7,8 +16,8 @@
     "build": "vite build"
   },
   "dependencies": {
+    "@jiangood/open-admin": "2.5.9",
     "@ant-design/icons": "^6.0.0",
-    "@jiangood/open-admin": "file:../../open-admin/web",
     "antd": "^6.0.0",
     "axios": "^1.13.2",
     "dayjs": "^1.11.13",
@@ -27,3 +36,4 @@
     "vite": "^8.0.0"
   }
 }
+```
