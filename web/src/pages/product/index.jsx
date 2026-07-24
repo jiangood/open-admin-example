@@ -1,7 +1,7 @@
 import {PlusOutlined} from '@ant-design/icons'
 import {Button, Form, Input, InputNumber, Modal, Popconfirm} from 'antd'
 import React from 'react'
-import {ButtonList, FieldDictSelect, FieldUploadFile, HttpUtils, Page, ProTable, ViewImage} from "@jiangood/open-admin";
+import {DictUtils, FieldDictSelect, FieldUploadFile, HttpUtils, Page, PermActions, ProTable, ViewImage} from "@jiangood/open-admin";
 
 export default class extends React.Component {
 
@@ -48,6 +48,9 @@ export default class extends React.Component {
         {
             title: '状态',
             dataIndex: 'status',
+            render(v) {
+                return DictUtils.dictLabel('product_status', v) || v
+            },
         },
         {
             title: '图片',
@@ -64,28 +67,21 @@ export default class extends React.Component {
             title: '操作',
             dataIndex: 'option',
             render: (_, record) => (
-                <ButtonList>
+                <PermActions>
                     <Button size='small' perm='product:update' onClick={() => this.handleEdit(record)}>编辑</Button>
                     <Popconfirm perm='product:delete' title='是否确定删除商品'
                                 onConfirm={() => this.handleDelete(record)}>
                         <Button size='small'>删除</Button>
                     </Popconfirm>
-                </ButtonList>
+                </PermActions>
             ),
         },
     ]
 
     render() {
-        return <Page>
+        return <Page title="商品管理" description="管理系统商品" actions={<Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>新增</Button>}>
             <ProTable
                 actionRef={this.tableRef}
-                toolBarRender={() => {
-                    return <ButtonList>
-                        <Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>
-                            新增
-                        </Button>
-                    </ButtonList>
-                }}
                 request={(params) => HttpUtils.get('admin/product/page', params)}
                 columns={this.columns}
             >
