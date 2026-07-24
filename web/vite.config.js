@@ -10,6 +10,7 @@ export default defineConfig(({mode, command}) => {
     return {
         plugins: [react(), openAdmin()],
         base: command === 'build' ? './' : '/',
+        resolve: {dedupe: ['react', 'react-dom']},
         optimizeDeps: {exclude: ['@jiangood/open-admin']},
         server: {
             port: env.PORT ? Number(env.PORT) : 8090,
