@@ -11,7 +11,7 @@ open-admin-example 是一个基于 [open-admin](https://github.com/jiangood/open
 ## Tech Stack
 
 - **Backend**: Java 21, Spring Boot 4.0.6, Spring Data JPA (Hibernate), Spring Security, Quartz, MySQL 8+
-- **Frontend**: React 19, Ant Design 6, UmiJS 4, TypeScript
+- **Frontend**: React 19, Ant Design 6, Vite 8（自研 hash 路由 + PageFrame）, TypeScript
 - **Build**: Maven (backend, via `./mvnw`), npm (frontend, in `web/`)
 
 ## Project Structure (open-admin-example)
@@ -23,12 +23,15 @@ open-admin-example/
 │   └── Application.java  # 唯一启动类，@SpringBootApplication + @EntityScan
 ├── src/main/resources/
 │   └── application.yml   # 数据库配置 + 系统标题等
-├── web/                   # 前端项目 (UmiJS 4)
-│   ├── package.json      # 依赖 @jiangood/open-admin + antd + umi
-│   ├── .env              # PORT=8090, SERVLET_CONTEXT=/example
-│   ├── config/config.js  # UmiJS 配置 + 开发代理
+├── web/                   # 前端项目 (Vite 8)
+│   ├── package.json      # 依赖 @jiangood/open-admin + antd + vite
+│   ├── vite.config.js    # Vite 配置 + 开发代理
+│   ├── index.html        # Vite HTML 入口
+│   ├── .env              # PORT=8090, VITE_SERVLET_CONTEXT=/example
 │   └── src/
-│       └── app.js        # 应用入口
+│       ├── main.jsx      # 应用入口
+│       ├── layouts/      # 布局组件
+│       └── pages/        # 业务页面
 └── data/                  # gitignored, 运行产生的数据文件
 ```
 
@@ -70,7 +73,7 @@ Controller → Service → Repository (JPA) → Entity (MySQL)
 - **View\***: 展示组件（ViewFile, ViewImage, ViewBoolean 等）
 - **HttpUtils**: 封装 axios，自动拼接 context-path
 - **SysUtils**: 系统信息（站点配置、登录用户、字典）
-- **配置**: UmiJS 插件 `@jiangood/open-admin/config/common-plugin`
+- **配置**: Vite 插件 `@jiangood/open-admin/vite-plugin`
 
 ## Development Commands
 
@@ -101,8 +104,8 @@ cd web && npm run build
 | 位置 | 文件 | 说明 |
 |------|------|------|
 | 后端 | `application.yml` | `server.servlet.context-path` |
-| 前端环境变量 | `web/.env` | `SERVLET_CONTEXT` |
-| 前端代理 | `web/config/config.js` | proxy 配置 + define 注入 |
+| 前端环境变量 | `web/.env` | `VITE_SERVLET_CONTEXT` |
+| 前端代理 | `web/vite.config.js` | proxy 配置 |
 
 ## Adding a Business Module
 
