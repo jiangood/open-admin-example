@@ -17,7 +17,6 @@ spring:
 
 sys:
   title: 示例系统
-  captcha-enable: false
 
 db_ip: 127.0.0.1
 db_port: 3306
