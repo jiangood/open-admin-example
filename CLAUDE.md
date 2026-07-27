@@ -118,7 +118,7 @@ cd web && npm run build
 |------|------|--------|
 | `sys.title` | 系统标题（必填） | 管理系统 |
 | `sys.captcha-enable` | 登录验证码 | true |
-| `sys.default-password` | 默认密码 | Open@1234 |
+
 | `sys.logo-url` | Logo 路径 | /admin/public/logo.svg |
 | `sys.file.store-type` | 文件存储类型 (local/s3/custom) | local |
 

@@ -37,7 +37,7 @@ public class ProductController {
     @HasPermission("product:create")
     @PostMapping("create")
     public AjaxResult create(@RequestBody Product input) {
-        service.save(input);
+        service.create(input);
         return AjaxResult.ok().msg("创建成功");
     }
 

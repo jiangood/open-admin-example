@@ -60,7 +60,7 @@ npm run dev
 
 浏览器打开 http://localhost:8090/example/
 
-默认管理员账号：`admin` / 密码见 application.yml 中 `sys.default-password`
+默认管理员账号：`admin` / 首次创建用户时通过请求体设置密码
 
 ## 自定义指南
 
@@ -89,7 +89,6 @@ npm run dev
 | `sys.title` | 系统标题（必填） | 管理系统 |
 | `sys.captcha-enable` | 是否开启登录验证码 | true |
 | `sys.logo-url` | Logo 图片路径 | /admin/public/logo.svg |
-| `sys.default-password` | 默认密码 | Open@1234 |
 | `server.servlet.context-path` | 上下文路径 | / |
 
 完整配置项参考框架源码 `SystemProperties.java`
