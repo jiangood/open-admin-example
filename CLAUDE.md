@@ -10,9 +10,9 @@ open-admin-example 是一个基于 [open-admin](https://github.com/jiangood/open
 
 ## Tech Stack
 
-- **Backend**: Java 21, Spring Boot 4.0.6, Spring Data JPA (Hibernate), Spring Security, Quartz, MySQL 8+
+- **Backend**: Java 21, Spring Boot 4.1.0, Spring Data JPA (Hibernate), Spring Security, Quartz, MySQL 8+
 - **Frontend**: React 19, Ant Design 6, Vite 8（自研 hash 路由 + PageFrame）, TypeScript
-- **Build**: Maven (backend, via `./mvnw`), npm (frontend, in `web/`)
+- **Build**: Maven (backend), npm (frontend, in `web/`)
 
 ## Project Structure (open-admin-example)
 
@@ -20,7 +20,7 @@ open-admin-example 是一个基于 [open-admin](https://github.com/jiangood/open
 open-admin-example/
 ├── pom.xml               # 仅依赖 open-admin + mysql-connector-j + spring-boot-starter-test
 ├── src/main/java/com/example/
-│   └── Application.java  # 唯一启动类，@SpringBootApplication + @EntityScan
+│   └── Application.java  # 唯一启动类，仅 @SpringBootApplication（框架自动配置自动注册 EntityScan）
 ├── src/main/resources/
 │   └── application.yml   # 数据库配置 + 系统标题等
 ├── web/                   # 前端项目 (Vite 8)
@@ -29,9 +29,8 @@ open-admin-example/
 │   ├── index.html        # Vite HTML 入口
 │   ├── .env              # PORT=8090, VITE_SERVLET_CONTEXT=/example
 │   └── src/
-│       ├── main.jsx      # 应用入口
-│       ├── layouts/      # 布局组件
-│       └── pages/        # 业务页面
+│       ├── main.jsx      # 应用入口（registerRoutes + Layouts）
+│       └── pages/        # 业务页面（文件即路由，由 vite-plugin 扫描）
 └── data/                  # gitignored, 运行产生的数据文件
 ```
 
@@ -68,24 +67,23 @@ Controller → Service → Repository (JPA) → Entity (MySQL)
 ### 前端框架 (web/src/framework → npm 包 @jiangood/open-admin)
 
 - **ProTable**: 通用列表页组件（带搜索/分页/工具栏）
-- **ProModal**: 通用弹窗表单组件
 - **Field\***: 表单字段组件（FieldDictSelect, FieldRemoteSelect, FieldDate, FieldUploadFile 等）
-- **View\***: 展示组件（ViewFile, ViewImage, ViewBoolean 等）
+- **View\***: 展示组件（ViewFile, ViewImage, ViewBoolean, ViewSwitch 等）
 - **HttpUtils**: 封装 axios，自动拼接 context-path
-- **SysUtils**: 系统信息（站点配置、登录用户、字典）
+- **GlobalData**: 站点信息/登录信息/字典的存取（sessionStorage）
 - **配置**: Vite 插件 `@jiangood/open-admin/vite-plugin`
 
 ## Development Commands
 
 ```bash
 # Backend - 启动开发服务器 (默认 8080 端口)
-./mvnw spring-boot:run
+mvn spring-boot:run
 
 # Backend - 编译
-./mvnw clean compile
+mvn clean compile
 
 # Backend - 打包
-./mvnw clean package
+mvn clean package
 
 # Frontend - 安装依赖
 cd web && npm install
@@ -110,8 +108,8 @@ cd web && npm run build
 ## Adding a Business Module
 
 1. **后端**: 在 `com.example` 下创建 Entity（extends BaseEntity）、Repository（extends BaseRepository）、Service（extends BaseService）、Controller（REST + @HasPermission）
-2. **前端**: 在 `web/src/pages/` 下创建页面（使用 ProTable/ProModal/Field* 组件快速搭建 CRUD）
-3. **菜单**: 在 `src/main/resources/data/` 下添加 `menu*.yml` 文件定义菜单项
+2. **前端**: 在 `web/src/pages/` 下创建页面（使用 ProTable/Field* 组件快速搭建 CRUD）
+3. **菜单**: 在 `src/main/resources/` 下添加 `application-menu*.yml` 文件定义菜单项
 4. **数据库**: 无需手动建表，JPA 自动根据 Entity 创建/更新表结构
 
 ## Key Configuration (application.yml)
@@ -120,7 +118,7 @@ cd web && npm run build
 |------|------|--------|
 | `sys.title` | 系统标题（必填） | 管理系统 |
 | `sys.captcha-enable` | 登录验证码 | true |
-| `sys.default-password` | 默认密码 | open-admin@1234 |
+| `sys.default-password` | 默认密码 | Open@1234 |
 | `sys.logo-url` | Logo 路径 | /admin/public/logo.svg |
 | `sys.file.store-type` | 文件存储类型 (local/s3/custom) | local |
 

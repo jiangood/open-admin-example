@@ -33,7 +33,7 @@ db_password: your_password
 ### 3. 启动后端
 
 ```bash
-./mvnw spring-boot:run
+mvn spring-boot:run
 ```
 
 首次启动会自动创建数据库表和初始数据（包括默认管理员账号）。
@@ -66,16 +66,16 @@ npm run dev
 
 ### 修改上下文路径
 
+两处需同步修改（如改为 `/demo`）：
+
 1. 修改 `application.yml` 中的 `server.servlet.context-path`
-2. 修改 `web/.env` 中的 `SERVLET_CONTEXT` 为相同值
-3. 修改 `web/config/config.js` 中 `proxyConfig` 的 key 和 `define` 中的 `SERVLET_CONTEXT`
-4. 重新构建前端即可生效
+2. 修改 `web/.env` 中的 `VITE_SERVLET_CONTEXT` 为相同值（开发代理会根据该变量自动生成）
 
 ### 添加业务模块
 
 1. **后端**：在 `com.example` 包下创建 Entity（继承 `BaseEntity`）、Repository（继承 `BaseRepository`）、Service（继承 `BaseService`）、Controller（RESTful + `@HasPermission` 权限注解）
 2. **前端**：在 `web/src/pages/` 下创建页面组件（使用框架的 ProTable、Field* 等组件快速搭建 CRUD）
-3. **菜单**：在 `src/main/resources/data/` 下创建 `menu*.yml` 文件定义菜单项，框架自动扫描注册
+3. **菜单**：在 `src/main/resources/` 下创建 `application-menu*.yml` 文件定义菜单项（参考 `application-menu-product.yml`），框架自动扫描注册
 4. **数据库**：JPA 根据 Entity 自动创建/更新表结构，无需手动编写 DDL
 
 ### 框架配置
@@ -89,7 +89,7 @@ npm run dev
 | `sys.title` | 系统标题（必填） | 管理系统 |
 | `sys.captcha-enable` | 是否开启登录验证码 | true |
 | `sys.logo-url` | Logo 图片路径 | /admin/public/logo.svg |
-| `sys.default-password` | 默认密码 | open-admin@1234 |
+| `sys.default-password` | 默认密码 | Open@1234 |
 | `server.servlet.context-path` | 上下文路径 | / |
 
 完整配置项参考框架源码 `SystemProperties.java`
