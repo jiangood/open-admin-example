@@ -13,6 +13,12 @@ export default defineConfig(({mode, command}) => {
     return {
         plugins: [react(), openAdmin()],
         base: command === 'build' ? './' : '/',
+        optimizeDeps: {
+            entries: [
+                'index.html',
+                './node_modules/@jiangood/open-admin/src/**/*.{ts,tsx,js,jsx}',
+            ],
+        },
         server: {
             port: port,
             proxy: {
