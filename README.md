@@ -1,94 +1,258 @@
 # open-admin-example
 
-基于 [open-admin](https://github.com/jiangood/open-admin) 框架的示例/模板项目，演示业务项目如何快速接入 open-admin 获得完整的后台管理能力。
+基于 [open-admin](https://github.com/jiangood/open-admin) 框架的项目模板，快速交付后台管理系统。
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.jiangood/open-admin)](https://central.sonatype.com/artifact/io.github.jiangood/open-admin)
 
-## 环境要求
+## Tech Stack
 
-- Java 21+
-- MySQL 8+
-- Node.js 18+
+| 层 | 技术 | 版本 |
+|---|---|---|
+| 后端 | Java / Spring Boot / Spring Data JPA (Hibernate) / Spring Security / Quartz | 21 / 4.1.0 |
+| 前端 | React / Ant Design / Vite（自研 hash 路由 + PageFrame） | 19 / 6 / 8 |
+| 数据库 | MySQL | 8+ |
+| 构建 | Maven / npm | / |
 
-## 快速开始
-
-### 1. 创建数据库
+## Quick Start
 
 ```sql
 CREATE DATABASE open_admin_example DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 ```
 
-### 2. 配置数据库连接
+修改 `src/main/resources/application.yml` 中 `db_*` 连接信息，然后：
 
-修改 `src/main/resources/application.yml` 中的数据库连接信息：
+```bash
+# 终端 1：启动后端（首次自动建表 + 初始化数据，默认管理员 admin / Open@1234）
+mvn spring-boot:run
+
+# 终端 2：启动前端
+cd web
+npm install        # 首次或依赖变更时
+npm run dev        # → http://localhost:8090/example/
+```
+
+## Project Structure
+
+```
+open-admin-example/
+├── pom.xml                          # 仅依赖 open-admin + mysql-connector-j + test + lombok
+├── src/main/java/com/example/
+│   ├── Application.java
+│   └── product/                     # ── 业务模块示例 ──
+│       ├── Product.java             #   Entity extends BaseEntity
+│       ├── ProductRepository.java   #   extends BaseRepository<T, String>
+│       ├── ProductService.java      #   extends BaseService<T>
+│       └── ProductController.java   #   REST + @HasPermission
+├── src/main/resources/
+│   ├── application.yml
+│   └── application-menu-product.yml # 菜单定义（框架自动扫描 classpath*:application-menu*.yml）
+├── web/                             # 前端 (Vite 8)
+│   ├── package.json
+│   ├── vite.config.js
+│   ├── .env                         # PORT=8090, VITE_SERVLET_CONTEXT=/example
+│   └── src/
+│       ├── main.jsx                 # registerRoutes + Layouts
+│       └── pages/                   # 文件即路由（vite-plugin 扫描）
+│           ├── index.jsx
+│           └── product/index.jsx    # ProTable CRUD 页面
+└── data/                            # gitignored, 运行时数据
+
+# 框架源码 (同级目录)
+D:/ws/open-admin/
+```
+
+## Architecture
+
+### Backend (四层)
+
+```
+Controller → Service → Repository (JPA) → Entity (MySQL)
+```
+
+- **Entity**: extends `BaseEntity` → UUIDv7 ID, createTime/user, updateTime/user
+- **Repository**: extends `BaseRepository<T, String>` → CRUD, `Spec<T>` 动态查询(eq/like/in/between/or/groupBy), 分组统计, 批量操作
+- **Service**: extends `BaseService<T>` → 通用 CRUD
+- **Controller**: RESTful, 返回 `AjaxResult`, `@HasPermission` 权限控制
+- **分页**: `PageExt<T>` extends `PageImpl`, 支持 summary 汇总行
+
+### Frontend (组件体系)
+
+| 组件 | 用途 |
+|---|---|
+| `ProTable` | 通用列表页（搜索/分页/工具栏） |
+| `FormModal` | 弹出表单 |
+| `FieldDictSelect` / `FieldRemoteSelect` / `FieldDate` / `FieldUploadFile` | 表单字段 |
+| `ViewImage` / `ViewFile` / `ViewBoolean` / `ViewSwitch` | 展示组件 |
+| `Page` / `PermActions` | 页面布局 / 权限包裹 |
+| `HttpUtils` | axios 封装（自动拼 context-path） |
+| `DictUtils` | 字典工具（`dictLabel(typeCode, value)`） |
+| `GlobalData` | sessionStorage 封装 |
+
+## Adding a Business Module
+
+### 后端
+
+**Entity** — 继承 `BaseEntity`，用 `@FieldNameConstants` 供 Spec 引用字段名：
+
+```java
+@Entity @Table(name = "your_table")
+@Getter @Setter @FieldNameConstants
+public class YourEntity extends BaseEntity {
+    @NotNull @Column(nullable = false)
+    private String name;
+}
+```
+
+**Repository** — 零代码：
+
+```java
+public interface YourRepository extends BaseRepository<YourEntity, String> {}
+```
+
+**Service** — 零代码（需复杂业务逻辑时重写 BaseService 方法）：
+
+```java
+@Service
+public class YourService extends BaseService<YourEntity> {}
+```
+
+**Controller** — RESTful + 权限注解：
+
+```java
+@RestController @RequestMapping("admin/your-resource")
+@RequiredArgsConstructor
+public class YourController {
+    private final YourService service;
+
+    @HasPermission("your:read")
+    @RequestMapping("page")
+    public AjaxResult page(String name, @PageableDefault(sort = "updateTime", direction = Sort.Direction.DESC) Pageable pageable) {
+        return AjaxResult.ok().data(service.findAll(Spec.of().like("name", name), pageable));
+    }
+
+    @HasPermission("your:create") @PostMapping("create")
+    public AjaxResult create(@RequestBody YourEntity input) {
+        service.create(input);
+        return AjaxResult.ok().msg("创建成功");
+    }
+
+    @HasPermission("your:update") @PostMapping("update")
+    public AjaxResult update(@RequestBody YourEntity input, RequestBodyKeys updateFields) {
+        service.update(input, updateFields);
+        return AjaxResult.ok().msg("更新成功");
+    }
+
+    @HasPermission("your:delete") @PostMapping("delete")
+    public AjaxResult delete(@Valid @RequestBody IdReq idRequest) {
+        service.deleteById(idRequest.getId());
+        return AjaxResult.ok().msg("删除成功");
+    }
+}
+```
+
+### 前端
+
+在 `web/src/pages/your-page/index.jsx` 创建文件（路径即路由），ProTable + FormModal 快速 CRUD：
+
+```jsx
+import {PlusOutlined} from '@ant-design/icons'
+import {Button, Form, Input, Popconfirm} from 'antd'
+import {FormModal, HttpUtils, Page, PermActions, ProTable} from "@jiangood/open-admin";
+
+export default class extends React.Component {
+    modalRef = React.createRef()
+    tableRef = React.createRef()
+
+    columns = [
+        {title: '名称', dataIndex: 'name'},
+        {title: '操作', dataIndex: 'option',
+            render: (_, r) => <PermActions>
+                <Button perm='your:update' onClick={() => this.modalRef.current.open(r)}>编辑</Button>
+                <Popconfirm perm='your:delete' title='确认删除' onConfirm={() =>
+                    HttpUtils.post('admin/your-resource/delete', {id: r.id}).then(() => this.tableRef.current.reload())
+                }><Button>删除</Button></Popconfirm>
+            </PermActions>
+        },
+    ]
+
+    render() {
+        return <Page title="资源管理">
+            <ProTable actionRef={this.tableRef}
+                request={p => HttpUtils.get('admin/your-resource/page', p)}
+                columns={this.columns}
+                toolBarRender={() => <PermActions>
+                    <Button perm='your:create' type='primary' icon={<PlusOutlined/>}
+                        onClick={() => this.modalRef.current.open({})}>新增</Button>
+                </PermActions>}
+            />
+            <FormModal ref={this.modalRef} title='资源' onFinish={v =>
+                HttpUtils.post(v.id ? 'admin/your-resource/update' : 'admin/your-resource/create', v)
+                    .then(() => this.tableRef.current.reload())
+            }>
+                <Form.Item label='名称' name='name' rules={[{required: true}]}><Input/></Form.Item>
+            </FormModal>
+        </Page>
+    }
+}
+```
+
+### 菜单
+
+`src/main/resources/application-menu-xxx.yml`，框架自动扫描合并：
 
 ```yaml
-db_ip: 127.0.0.1
-db_port: 3306
-db_database: open-admin-example
-db_username: root
-db_password: 123456
+menus:
+  your-module:
+    name: 模块名
+    icon: SettingOutlined
+  your-page:
+    pid: your-module
+    name: 页面名
+    path: /your-page
+    perms:
+      - {name: 读取, code: your:read}
+      - {name: 创建, code: your:create}
+      - {name: 编辑, code: your:update}
+      - {name: 删除, code: your:delete}
 ```
 
-### 3. 启动后端
+> 数据库无需手动 DDL —— JPA 根据 Entity 自动建表/更新。
 
-```bash
-mvn spring-boot:run
-```
+## Built-in Modules
 
-首次启动会自动创建数据库表和初始数据（包括默认管理员账号）。
+框架在 `io.github.jiangood.openadmin.modules.*` 中已实现：
 
-### 4. 安装框架前端依赖（首次或依赖变更时）
+| 模块 | 功能 |
+|---|---|
+| system | 用户/角色/菜单/组织/字典/文件/日志 |
+| job | Quartz 定时任务管理 |
+| logviewer | 运行日志在线查看 |
 
-```bash
-cd web
-npm install
-```
+## Configuration
 
-框架前端 `@jiangood/open-admin` 已配置为 npm 依赖，无需手动拷贝。
+`spring.config.import: classpath:application-lib.yml` 引入框架默认配置。
 
-### 5. 启动前端
-
-```bash
-cd web
-npm run dev
-```
-
-前端开发服务器运行在 8090 端口，自动代理 API 请求到后端 8080 端口。
-
-### 6. 访问系统
-
-浏览器打开 http://localhost:8090/example/
-
-默认管理员账号：`admin` / 密码 `Open@1234`
-
-## 自定义指南
-
-### 修改上下文路径
-
-两处需同步修改（如改为 `/demo`）：
-
-1. 修改 `application.yml` 中的 `server.servlet.context-path`
-2. 修改 `web/.env` 中的 `VITE_SERVLET_CONTEXT` 为相同值（开发代理会根据该变量自动生成）
-
-### 添加业务模块
-
-1. **后端**：在 `com.example` 包下创建 Entity（继承 `BaseEntity`）、Repository（继承 `BaseRepository`）、Service（继承 `BaseService`）、Controller（RESTful + `@HasPermission` 权限注解）
-2. **前端**：在 `web/src/pages/` 下创建页面组件（使用框架的 ProTable、Field* 等组件快速搭建 CRUD）
-3. **菜单**：在 `src/main/resources/` 下创建 `application-menu*.yml` 文件定义菜单项（参考 `application-menu-product.yml`），框架自动扫描注册
-4. **数据库**：JPA 根据 Entity 自动创建/更新表结构，无需手动编写 DDL
-
-### 框架配置
-
-`application.yml` 中通过 `spring.config.import: classpath:application-lib.yml` 引入框架默认配置，业务项目只需覆盖需要的配置项。
-
-主要配置项：
-
-| 配置 | 说明 | 默认值 |
-|------|------|--------|
+| 配置 | 说明 | 默认 |
+|---|---|---|
 | `sys.title` | 系统标题（必填） | 管理系统 |
-| `sys.captcha-enable` | 是否开启登录验证码 | true |
-| `sys.logo-url` | Logo 图片路径 | /admin/public/logo.svg |
-| `server.servlet.context-path` | 上下文路径 | / |
+| `sys.captcha-enable` | 登录验证码 | true |
+| `sys.logo-url` | Logo 路径 | /admin/public/logo.svg |
+| `sys.file.store-type` | 文件存储类型 (local/s3/custom) | local |
 
-完整配置项参考框架源码 `SystemProperties.java`
+完整配置项见框架 `SystemProperties.java`。
+
+## Context-Path
+
+系统部署在子路径（如 `/example`）时，前后端需同步：
+
+| 位置 | 文件 | 配置 |
+|---|---|---|
+| 后端 | `application.yml` | `server.servlet.context-path` |
+| 前端环境变量 | `web/.env` | `VITE_SERVLET_CONTEXT` |
+| 前端代理 | `web/vite.config.js` | proxy 目标自动根据 env 生成 |
+
+## Framework
+
+框架源码：`D:/ws/open-admin/`（同级目录，其 CLAUDE.md 含详细架构说明）
+
+修改框架行为后需 `mvn install` 更新版本，再更新 example 的依赖版本。
