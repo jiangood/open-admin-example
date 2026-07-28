@@ -25,9 +25,9 @@ CREATE DATABASE open_admin_example DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4
 ```yaml
 db_ip: 127.0.0.1
 db_port: 3306
-db_database: open_admin_example
+db_database: open-admin-example
 db_username: root
-db_password: your_password
+db_password: 123456
 ```
 
 ### 3. 启动后端
@@ -60,7 +60,7 @@ npm run dev
 
 浏览器打开 http://localhost:8090/example/
 
-默认管理员账号：`admin` / 首次创建用户时通过请求体设置密码
+默认管理员账号：`admin` / 密码 `Open@1234`
 
 ## 自定义指南
 

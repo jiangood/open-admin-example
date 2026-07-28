@@ -74,19 +74,27 @@ export default class extends React.Component {
     ]
 
     render() {
-        return <Page title="商品管理" description="管理系统商品" actions={<Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>新增</Button>}>
+        return <Page title="商品管理" description="管理系统商品">
             <ProTable
                 actionRef={this.tableRef}
                 request={(params) => HttpUtils.get('admin/product/page', params)}
                 columns={this.columns}
-            >
-                <Form.Item label='商品名称' name='name'>
-                    <Input/>
-                </Form.Item>
-                <Form.Item label='状态' name='status'>
-                    <FieldDictSelect typeCode='product_status'/>
-                </Form.Item>
-            </ProTable>
+                toolBarRender={() => (
+                    <PermActions>
+                        <Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>新增</Button>
+                    </PermActions>
+                )}
+                searchFormRender={() => (
+                    <>
+                        <Form.Item label='商品名称' name='name'>
+                            <Input/>
+                        </Form.Item>
+                        <Form.Item label='状态' name='status'>
+                            <FieldDictSelect typeCode='product_status'/>
+                        </Form.Item>
+                    </>
+                )}
+            />
 
             <FormModal ref={this.modalRef} title='商品' onFinish={this.onFinish}>
 
