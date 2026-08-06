@@ -1,5 +1,5 @@
 import {PlusOutlined} from '@ant-design/icons'
-import {Button, Form, Input, InputNumber, Popconfirm} from 'antd'
+import {Form, Input, InputNumber} from 'antd'
 import React from 'react'
 import {DictUtils, FieldDictSelect, FieldUploadFile, FormModal, HttpUtils, Page, PermActions, ProTable, ViewImage} from "@jiangood/open-admin";
 
@@ -62,13 +62,10 @@ export default class extends React.Component {
             title: '操作',
             dataIndex: 'option',
             render: (_, record) => (
-                <PermActions>
-                    <Button size='small' perm='product:update' onClick={() => this.handleEdit(record)}>编辑</Button>
-                    <Popconfirm perm='product:delete' title='是否确定删除商品'
-                                onConfirm={() => this.handleDelete(record)}>
-                        <Button size='small'>删除</Button>
-                    </Popconfirm>
-                </PermActions>
+                <PermActions actions={[
+                    {label: '编辑', perm: 'product:update', onClick: () => this.handleEdit(record)},
+                    {label: '删除', perm: 'product:delete', danger: true, confirm: '是否确定删除商品', onClick: () => this.handleDelete(record)},
+                ]}/>
             ),
         },
     ]
@@ -80,9 +77,9 @@ export default class extends React.Component {
                 request={(params) => HttpUtils.get('admin/product/page', params)}
                 columns={this.columns}
                 toolBarRender={() => (
-                    <PermActions>
-                        <Button perm='product:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>新增</Button>
-                    </PermActions>
+                    <PermActions actions={[
+                        {label: '新增', perm: 'product:create', type: 'primary', icon: <PlusOutlined/>, onClick: this.handleAdd}
+                    ]}/>
                 )}
                 searchFormRender={() => (
                     <>
