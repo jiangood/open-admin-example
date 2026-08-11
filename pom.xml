@@ -49,5 +49,19 @@
             </plugin>
         </plugins>
     </build>
+    <!-- 配置依赖仓库（用于下载项目依赖） -->
+    <repositories>
+        <repository>
+            <id>huaweicloud</id>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </repository>
+    </repositories>
 
+    <!-- 配置插件仓库（用于下载Maven插件，如 spring-boot-maven-plugin） -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>huaweicloud-plugins</id>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
