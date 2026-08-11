@@ -24,32 +24,32 @@ description: 在业务项目中升级 open-admin 框架版本 — 读取 Release
 
 ### 工具检查
 
-- `gh` CLI 已安装并认证（`gh auth status`）
 - Maven 可用（`mvn --version`）
-- Node.js / npm 可用（`node --version`）
+- Node.js / npm 可用（`node --version`）—— 用 `npm view` 验证版本
 
 ## 升级流程
 
 ### 1. 确认当前版本与可用版本
 
-展示当前版本，然后拉取框架仓库的发布列表：
+展示当前版本，然后拉取框架的可用版本：
 
 ```bash
-gh release list --repo jiangood/open-admin -L 10
+npm view @jiangood/open-admin versions --json
+npm view @jiangood/open-admin version
 ```
 
 向开发者展示可用版本，询问目标版本号（如 `3.0.2`、`4.0.0` 等）。
 
 ### 2. 读取变更信息
 
-同时获取两个数据源，合并展示给开发者：
+同时获取两个数据源，用 webfetch 工具抓取以下页面，合并展示给开发者：
 
-```bash
+```text
 # 2a. Git 提交日志（当前版本到目标版本之间的所有提交）
-gh api repos/jiangood/open-admin/compare/v{current_version}...v{target_version} --jq '.commits[].commit.message'
+https://github.com/jiangood/open-admin/compare/v{current_version}...v{target_version}
 
 # 2b. 目标版本的 Release Notes（含 Breaking Changes 和迁移说明）
-gh release view v{target_version} --repo jiangood/open-admin
+https://github.com/jiangood/open-admin/releases/tag/v{target_version}
 ```
 
 展示要点：
@@ -105,7 +105,17 @@ npm run build
 
 如有编译或测试失败，根据错误信息修复后重新从失败步骤开始验证。
 
-### 7. 其他检查（可选）
+### 7. 框架文件自动同步（skills + docs + AGENTS.md）
+
+框架 JAR 内置业务侧 skills 与文档（`META-INF/open-admin/framework-files/`），业务项目**启动后端时按内容比对自动同步**到项目根目录：
+
+- `<项目根>/.opencode/skills/oa-crud/`、`oa-upgrade/` — 覆盖写入（不删除业务本地 skill）
+- `<项目根>/docs/open-admin/*.md` — 全量镜像（删除孤儿文件）
+- `<项目根>/AGENTS.md` — 仅在不存在时生成（不覆盖业务自定义）；新版本随 `docs/open-admin/AGENTS.md` 提供
+
+无需手动复制。**升级完成后必须启动一次后端**，`FrameworkFileSyncer` 会按内容比对把新版 `.opencode/skills/`、`docs/open-admin/`、`AGENTS.md` 重新同步到项目根目录；未启动后端则这些文件不会更新。请在最后显式提醒开发者：启动后端后确认框架相关文件已重新生成。
+
+### 8. 其他检查（可选）
 
 - 启动项目确认登录/页面正常
 - 核心业务流程可用
@@ -117,6 +127,7 @@ npm run build
 - [ ] `npm run build` 正常
 - [ ] Release Notes 中的 Breaking Changes 已逐项处理
 - [ ] Git 提交日志中涉及业务代码的变更已适配
+- [ ] 升级后启动后端，`.opencode/skills/` 与 `docs/open-admin/` 已同步为新版本内容
 - [ ] 升级后功能正常（登录、菜单、CRUD 操作）
 
 ## 代码规范
@@ -129,5 +140,4 @@ npm run build
 ## 参考
 
 - 框架仓库: https://github.com/jiangood/open-admin
-- GitHub API 文档: https://docs.github.com/en/rest/releases
-- `gh` CLI 文档: https://cli.github.com/manual/
+- npm 包页面（`npm view` 查询版本）: https://www.npmjs.com/package/@jiangood/open-admin

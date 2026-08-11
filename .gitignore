@@ -51,3 +51,4 @@ build/
 /.claude/settings.local.json
 /docs/superpowers/
 /.superpowers/
+/docs/open-admin/
