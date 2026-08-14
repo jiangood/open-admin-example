@@ -21,13 +21,18 @@ export default defineConfig(({mode, command}) => {
         },
         server: {
             port: port,
-            proxy: {
-                [servletContext]: {
-                    target: `http://127.0.0.1:${serverPort}`,
-                    changeOrigin: true,
-                    ws: true,
-                },
-            },
+            // 精确匹配后端真实路径前缀，避免 context-path 为 "/" 时全量代理（会拦截前端静态资源）
+            proxy: (() => {
+                const proxy = {};
+                for (const p of ['admin', 'file', 'ureport']) {
+                    proxy[servletContext + '/' + p] = {
+                        target: `http://127.0.0.1:${serverPort}`,
+                        changeOrigin: true,
+                        ws: true,
+                    };
+                }
+                return proxy;
+            })(),
         },
     };
 });
