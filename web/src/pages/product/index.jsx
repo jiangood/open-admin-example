@@ -1,7 +1,7 @@
 import {PlusOutlined} from '@ant-design/icons'
 import {Form, Input, InputNumber} from 'antd'
 import React from 'react'
-import {DictUtils, FieldDictSelect, FieldUploadFile, FormModal, HttpUtils, Page, PermActions, ProTable, ViewImage} from "@jiangood/open-admin";
+import {DictUtils, FieldDictSelect, FieldUploadFile, FormModal, HttpClient, Page, PermActions, ProTable, ViewImage} from "@jiangood/open-admin";
 
 export default class extends React.Component {
 
@@ -21,12 +21,12 @@ export default class extends React.Component {
     onFinish = async values => {
         const isNew = !values.id;
         const url = isNew ? 'admin/product/create' : 'admin/product/update';
-        await HttpUtils.post(url, values)
+        await HttpClient.post(url, values)
         this.tableRef.current.reload()
     }
 
     handleDelete = record => {
-        HttpUtils.post('admin/product/delete', {id: record.id}).then(rs => {
+        HttpClient.post('admin/product/delete', {id: record.id}).then(rs => {
             this.tableRef.current.reload()
         })
     }
@@ -74,7 +74,7 @@ export default class extends React.Component {
         return <Page title="商品管理" description="管理系统商品">
             <ProTable
                 actionRef={this.tableRef}
-                request={(params) => HttpUtils.get('admin/product/page', params)}
+                request={(params) => HttpClient.get('admin/product/page', params)}
                 columns={this.columns}
                 toolBarRender={() => (
                     <PermActions actions={[
