@@ -10,7 +10,7 @@
 
 ## 技术栈与目录约定
 
-- **后端**：Java 21, Spring Boot 4+, JPA (Hibernate), Spring Security, Quartz, MySQL 8+
+- **后端**：Java 21, Spring Boot 4+, JPA (Hibernate), Spring Security, Quartz, H2（默认，文件模式）/ MySQL 8+（可选）
 - **前端**：React 19, Ant Design 6, Vite 8, TypeScript
 - **后端源码**：`src/main/java/{groupId}.{project}/`（业务包）
 - **前端页面**：`web/src/pages/`（小写开头文件自动注册路由）
@@ -29,6 +29,7 @@
 |-------|------|
 | `oa-crud` | 创建 CRUD 业务模块（Entity→Repository→Service→Controller→前端页面→菜单配置） |
 | `oa-upgrade` | 升级框架版本（依赖版本 + 代码迁移 + 验证） |
+| `oa-upgrade-docs` | 同步框架 skills 与 docs 到业务项目（从 GitHub Release 下载 framework-files.zip） |
 
 使用 opencode 进行开发时，优先调用上述 skill。
 
@@ -45,7 +46,8 @@
 
 ```bash
 mvn clean compile                                   # 后端编译
-mvn -Pdev spring-boot:run                           # 后端启动
+mvn -Pdev spring-boot:run                           # 后端启动（默认 H2，无需 MySQL）
 cd web && npm install && npm run dev                # 前端开发
 cd web && npm run build                             # 前端构建
+docker compose -f docker-compose/docker-compose.yml up -d --build   # 一键部署（内置 H2）
 ```

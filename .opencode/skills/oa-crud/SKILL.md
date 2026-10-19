@@ -221,7 +221,7 @@ public class CustomerService extends BaseService<Customer> {
 | 分页查询 | `@RequestMapping("page")` | `admin/{module}/page` | `{module}:read` | 支持 searchText 模糊搜索 + Pageable |
 | 详情 | `@GetMapping("info/{id}")` | `admin/{module}/info/{id}` | `{module}:read` | 返回单条记录 |
 | 创建 | `@PostMapping("create")` | `admin/{module}/create` | `{module}:create` | @RequestBody @Valid + @Log |
-| 更新 | `@PostMapping("update")` | `admin/{module}/update` | `{module}:update` | @RequestBody @Valid + RequestBodyKeys + @Log |
+| 更新 | `@PostMapping("update")` | `admin/{module}/update` | `{module}:update` | @RequestBody @Valid + @RequestHeader("X-Body-Fields") + @Log |
 | 删除 | `@PostMapping("delete")` | `admin/{module}/delete` | `{module}:delete` | @RequestBody IdReq + @Log |
 | 选项列表 | `@GetMapping("options")` | `admin/{module}/options` | `{module}:read` | 下拉框数据源（非必选） |
 
@@ -232,7 +232,6 @@ package com.mycompany.myproject.modules.customer.controller;
 
 import com.mycompany.myproject.modules.customer.entity.Customer;
 import com.mycompany.myproject.modules.customer.service.CustomerService;
-import io.github.jiangood.openadmin.framework.config.RequestBodyKeys;
 import io.github.jiangood.openadmin.framework.log.Log;
 import io.github.jiangood.openadmin.framework.data.specification.Spec;
 import io.github.jiangood.openadmin.framework.perm.HasPermission;
@@ -284,7 +283,7 @@ public class CustomerController {
     @Log("客户-更新")
     @HasPermission("customer:update")
     @PostMapping("update")
-    public AjaxResult update(@Valid @RequestBody Customer input, RequestBodyKeys updateFields) throws Exception {
+    public AjaxResult update(@Valid @RequestBody Customer input, @RequestHeader("X-Body-Fields") List<String> updateFields) throws Exception {
         service.save(input, updateFields);
         return AjaxResult.ok().msg("更新成功");
     }
@@ -308,16 +307,16 @@ public class CustomerController {
 }
 ```
 
-### 文件认领（必须）
+### 临时文件确认（必须）
 
-实体如果包含上传文件/图片字段（`FieldUploadFile`、`FieldUploadImage`、`FieldEditor` 富文本），业务保存后**必须认领文件**，否则文件一直处于"未认领(TEMP)"状态，默认 120 分钟后被清理任务物理删除：
+实体如果包含上传文件/图片字段（`FieldUploadFile`、`FieldUploadImage`、`FieldEditor` 富文本），业务保存后**必须确认临时文件**，否则文件一直处于"临时(TEMP)"状态，默认 120 分钟后被清理任务物理删除：
 
 - 实体文件字段打 `@FileField` 注解（富文本加 `html = true`）；实体无需继承 `BaseEntity`，实现 `Persistable<String>` 即可
-- `sysFileService.claim(entity)` 认领 / `unclaim(entity)` 取消认领，joinTable/joinId 自动取实体 `@Table(name)` 与 `getId()`
-- 更新时**先 `unclaim(old)` 再 save，save 后 `claim(entity)`**；删除时先 `unclaim` 再删除
-- unclaim + save + claim 必须整体放在**同一个 `@Transactional` Service 方法**内，不要拆到 Controller 或非事务方法
+- `sysFileService.confirmTempFiles(entity)` 确认 / `discardTempFiles(entity)` 丢弃，joinTable/joinId 自动取实体 `@Table(name)` 与 `getId()`
+- 更新时**先 `discardTempFiles(old)` 再 save，save 后 `confirmTempFiles(entity)`**；删除时先 `discardTempFiles` 再删除
+- discardTempFiles + save + confirmTempFiles 必须整体放在**同一个 `@Transactional` Service 方法**内，不要拆到 Controller 或非事务方法
 
-完整规则（事务边界、单记录独占、save/update/delete 代码示例）见[development.md「文件认领」](../../../docs/open-admin/development.md#文件认领)。若实体无任何文件/图片/富文本字段，可跳过本小节。
+完整规则（事务边界、单记录独占、save/update/delete 代码示例）见[development.md「临时文件确认」](../../../docs/open-admin/development.md#临时文件确认)。若实体无任何文件/图片/富文本字段，可跳过本小节。
 
 ## 第三步：前端页面创建
 
@@ -333,7 +332,7 @@ public class CustomerController {
 
 ```jsx
 import {PlusOutlined} from '@ant-design/icons'
-import {Button, Form, Input, Popconfirm} from 'antd'
+import {Form, Input} from 'antd'
 import React from 'react'
 import {FormModal, HttpClient, Page, PermActions, ProTable} from "@jiangood/open-admin";
 
@@ -350,12 +349,10 @@ export default class extends React.Component {
         { title: '创建时间', dataIndex: 'createTime' },
         { title: '操作', dataIndex: 'option',
             render: (_, record) => (
-                <PermActions>
-                    <Button size='small' perm='customer:update' onClick={() => this.handleEdit(record)}>编辑</Button>
-                    <Popconfirm perm='customer:delete' title='确定删除？' onConfirm={() => this.handleDelete(record)}>
-                        <Button size='small'>删除</Button>
-                    </Popconfirm>
-                </PermActions>
+                <PermActions actions={[
+                    {label: '编辑', perm: 'customer:update', onClick: () => this.handleEdit(record)},
+                    {label: '删除', perm: 'customer:delete', confirm: '确定删除？', onClick: () => this.handleDelete(record)},
+                ]}/>
             ),
         },
     ]
@@ -375,10 +372,10 @@ export default class extends React.Component {
         return <Page padding={true}>
             <ProTable
                 actionRef={this.tableRef}
-                toolBarRender={() => (
-                    <PermActions>
-                        <Button perm='customer:create' type='primary' icon={<PlusOutlined/>} onClick={this.handleAdd}>新增</Button>
-                    </PermActions>
+                toolBarRightRender={() => (
+                    <PermActions actions={[
+                        {label: '新增', type: 'primary', icon: <PlusOutlined/>, perm: 'customer:create', onClick: this.handleAdd},
+                    ]}/>
                 )}
                 request={(params) => HttpClient.get('admin/customer/page', params)}
                 columns={this.columns}
@@ -407,15 +404,18 @@ export default class extends React.Component {
 }
 ```
 
-> **工具栏右侧插槽**：需要把「导出/清理/刷新」等操作放到工具栏右侧时，用 `toolBarRightRender`（签名与 `toolBarRender` 相同，参数为 `params` + `{selectedRows, selectedRowKeys}`），示例：
+> **工具栏左右插槽的分工**：**操作按钮统一放右侧** `toolBarRightRender`（新增/导出/清理/刷新等，签名与 `toolBarRender` 相同，参数为 `params` + `{selectedRows, selectedRowKeys}`）；左槽 `toolBarRender` 只放状态/说明类内容，例如：
 >
 > ```jsx
-> toolBarRightRender={(params, {selectedRowKeys}) => (
->     <Button danger disabled={!selectedRowKeys.length} onClick={this.handleClean}>清理失败记录</Button>
+> toolBarRender={(params, {selectedRowKeys}) => (
+>     <span>已选 {selectedRowKeys.length} 项</span>
+> )}
+> toolBarRightRender={() => (
+>     <PermActions actions={[{label: '新增', type: 'primary', perm: 'customer:create', onClick: this.handleAdd}]}/>
 > )}
 > ```
 >
-> 左右插槽可单独或同时使用；不要再写 CSS 覆盖 `.pro-table-toolbar-left` 来绕过。
+> 与行选择强耦合的批量操作（如批量删除）放右侧时，把数量写进按钮文案（`批量删除(2)`）以保留与勾选框的关联。左右插槽可单独或同时使用；不要再写 CSS 覆盖 `.pro-table-toolbar-left` 来绕过。
 
 ### 页面生命周期
 
@@ -495,6 +495,15 @@ menus:
     pid: system   # 挂在系统管理菜单下
     name: 客户管理
     path: /customer
+```
+
+如需在左侧菜单中用分隔线对菜单项分组，配置 `type: divider`（无需 `name`/`path`，用 `pid` + `seq` 控制分隔线位置）。分隔线仅对左侧菜单生效：
+
+```yaml
+  customer-sep:
+    pid: customer
+    type: divider
+    seq: 20500
 ```
 
 ### 权限对应关系

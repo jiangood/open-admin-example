@@ -1,6 +1,5 @@
 package com.example.product;
 
-import io.github.jiangood.openadmin.framework.config.RequestBodyKeys;
 import io.github.jiangood.openadmin.framework.data.specification.Spec;
 import io.github.jiangood.openadmin.framework.perm.HasPermission;
 import io.github.jiangood.openadmin.util.dto.AjaxResult;
@@ -13,8 +12,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("admin/product")
@@ -43,7 +45,7 @@ public class ProductController {
 
     @HasPermission("product:update")
     @PostMapping("update")
-    public AjaxResult update(@RequestBody Product input, RequestBodyKeys updateFields) {
+    public AjaxResult update(@RequestBody Product input, @RequestHeader("X-Body-Fields") List<String> updateFields) {
         service.update(input, updateFields);
         return AjaxResult.ok().msg("更新成功");
     }

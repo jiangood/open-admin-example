@@ -10,19 +10,15 @@
 |---|---|---|
 | 后端 | Java / Spring Boot / Spring Data JPA (Hibernate) / Spring Security / Quartz | 21 / 4.1.0 |
 | 前端 | React / Ant Design / Vite（自研 hash 路由 + PageFrame） | 19 / 6 / 8 |
-| 数据库 | MySQL | 8+ |
-| 构建 | Maven / npm | / |
+| 数据库 | H2 文件模式（内置，开箱即用）；可选 MySQL | H2 2.x / 8+ |
+| 构建 | Maven / npm / Docker | / |
 
 ## Quick Start
 
-```sql
-CREATE DATABASE open_admin_example DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
-```
-
-修改 `src/main/resources/application.yml` 中 `db_*` 连接信息，然后：
+零外部依赖：内置 H2 数据库（MySQL 兼容模式），首次启动自动建表并初始化数据。
 
 ```bash
-# 终端 1：启动后端（首次自动建表 + 初始化数据，默认管理员 admin / Open@1234）
+# 终端 1：启动后端（默认管理员 admin / Open@1234）
 mvn spring-boot:run
 
 # 终端 2：启动前端
@@ -31,11 +27,40 @@ npm install        # 首次或依赖变更时
 npm run dev        # → http://localhost:8090/example/
 ```
 
+数据库文件默认在 `/data/db/open-admin-example`（本地开发可用 `-Ddb_path=./data/db/open-admin-example` 覆盖）。
+
+## 一键部署（Docker）
+
+镜像内置 H2 数据库，无需外部 MySQL，数据、日志、上传文件持久化在 `/data`：
+
+```bash
+# docker compose（首次自动构建镜像）
+docker compose -f docker-compose/docker-compose.yml up -d --build
+
+# 或手动构建 / 运行
+docker build -t open-admin-example .
+docker run -d --name open-admin-example -p 8080:8080 -v ./data:/data open-admin-example
+```
+
+访问 http://127.0.0.1:8080 ，账号 `admin`，密码 `Open@1234`（首次登录后请修改）。
+
+### 切换到 MySQL（可选）
+
+```bash
+# 本地：按 application-mysql.yml 中的 db_* 配置连接信息后
+mvn spring-boot:run -Dspring-boot.run.profiles=mysql
+
+# 容器：prod 保证根路径访问，mysql 覆盖数据源（后者优先）
+docker run -d -p 8080:8080 --spring.profiles.active=prod,mysql ...
+```
+
 ## Project Structure
 
 ```
 open-admin-example/
-├── pom.xml                          # 仅依赖 open-admin + mysql-connector-j + test + lombok
+├── pom.xml                          # 仅依赖 open-admin + h2（可选 mysql-connector-j） + test + lombok
+├── Dockerfile                       # 多阶段构建（内置 H2，一键部署）
+├── docker-compose/docker-compose.yml # 一键启动（./data 挂载为 /data）
 ├── src/main/java/com/example/
 │   ├── Application.java
 │   └── product/                     # ── 业务模块示例 ──
@@ -44,7 +69,9 @@ open-admin-example/
 │       ├── ProductService.java      #   extends BaseService<T>
 │       └── ProductController.java   #   REST + @HasPermission
 ├── src/main/resources/
-│   ├── application.yml
+│   ├── application.yml              # 默认数据源：H2 文件模式
+│   ├── application-mysql.yml        # 可选：切换 MySQL
+│   ├── application-prod.yml         # 容器部署：根路径访问
 │   └── application-menu-product.yml # 菜单定义（框架自动扫描 classpath*:application-menu*.yml）
 ├── web/                             # 前端 (Vite 8)
 │   ├── package.json
@@ -66,7 +93,7 @@ D:/ws/open-admin/
 ### Backend (四层)
 
 ```
-Controller → Service → Repository (JPA) → Entity (MySQL)
+Controller → Service → Repository (JPA) → Entity (H2 / MySQL)
 ```
 
 - **Entity**: extends `BaseEntity` → UUIDv7 ID, createTime/user, updateTime/user
@@ -234,6 +261,7 @@ menus:
 
 | 配置 | 说明 | 默认 |
 |---|---|---|
+| `db_path` | H2 数据库文件路径（不含扩展名） | /data/db/open-admin-example |
 | `sys.title` | 系统标题（必填） | 管理系统 |
 | `sys.captcha-enable` | 登录验证码 | true |
 | `sys.logo-url` | Logo 路径 | /admin/public/logo.svg |
