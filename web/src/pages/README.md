@@ -12,6 +12,9 @@
 | `pages/public/` | `/public/` | ❌ 否 | ❌ 否 |
 | `pages/standalone/` | `/standalone/` | ✅ 是 | ❌ 否 |
 
+> 页面可通过导出 `pageMeta` 显式覆盖目录默认值：`export const pageMeta = {title: '商品管理', requiresAuth: true, layout: 'admin'}`。
+> 页面标题优先取 `pageMeta.title`，其次取后端菜单名；`Page` 组件不再提供 `title` / `description` 属性。
+
 - **`pages/`** — 常规业务页面，带后台布局（菜单/顶部栏），需登录。如 `pages/product/index.jsx` → `/product`。
 - **`pages/public/`** — 公开页面，免登录、无后台布局。详见 [public/README.md](public/README.md)。
 - **`pages/standalone/`** — 需登录但无后台布局的独立页面。详见 [standalone/README.md](standalone/README.md)。

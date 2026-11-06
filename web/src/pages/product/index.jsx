@@ -3,6 +3,8 @@ import {Form, Input, InputNumber} from 'antd'
 import React from 'react'
 import {DictUtils, FieldDictSelect, FieldUploadFile, FormModal, HttpClient, Page, PermActions, ProTable, ViewImage} from "@jiangood/open-admin";
 
+export const pageMeta = {title: '商品管理'}
+
 export default class extends React.Component {
 
     state = {}
@@ -71,7 +73,7 @@ export default class extends React.Component {
     ]
 
     render() {
-        return <Page title="商品管理" description="管理系统商品">
+        return <Page>
             <ProTable
                 actionRef={this.tableRef}
                 request={(params) => HttpClient.get('admin/product/page', params)}

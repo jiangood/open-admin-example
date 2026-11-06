@@ -22,7 +22,7 @@
         <dependency>
             <groupId>io.github.jiangood</groupId>
             <artifactId>open-admin</artifactId>
-            <version>3.1.8</version>
+            <version>3.1.12</version>
         </dependency>
         <!-- 默认数据库：H2 文件模式（零外部依赖，开箱即用，适合一键部署镜像） -->
         <dependency>
