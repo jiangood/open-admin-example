@@ -22,7 +22,7 @@
         <dependency>
             <groupId>io.github.jiangood</groupId>
             <artifactId>open-admin</artifactId>
-            <version>3.1.12</version>
+            <version>3.1.13</version>
         </dependency>
         <!-- 默认数据库：H2 文件模式（零外部依赖，开箱即用，适合一键部署镜像） -->
         <dependency>
@@ -30,7 +30,7 @@
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <!-- 可选：切换回 MySQL 时使用（spring.profiles.active=mysql） -->
+        <!-- 可选：切换回 MySQL 时使用（本地用 spring.profiles.active=mysql，容器用 SPRING_PROFILES_ACTIVE=prod,mysql） -->
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
