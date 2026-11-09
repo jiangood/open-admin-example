@@ -42,6 +42,8 @@ docker build -t open-admin-example .
 docker run -d --name open-admin-example -p 8080:8080 -v ./data:/data open-admin-example
 ```
 
+容器默认以 `prod` profile 启动；需要切换时用环境变量覆盖即可，例如 `docker run -e SPRING_PROFILES_ACTIVE=prod,mysql ...`。
+
 访问 http://127.0.0.1:8080 ，账号 `admin`，密码 `Open@1234`（首次登录后请修改）。
 
 ### 切换到 MySQL（可选）
@@ -51,7 +53,7 @@ docker run -d --name open-admin-example -p 8080:8080 -v ./data:/data open-admin-
 mvn spring-boot:run -Dspring-boot.run.profiles=mysql
 
 # 容器：prod 保证根路径访问，mysql 覆盖数据源（后者优先）
-docker run -d -p 8080:8080 --spring.profiles.active=prod,mysql ...
+docker run -d -p 8080:8080 -e SPRING_PROFILES_ACTIVE=prod,mysql ...
 ```
 
 ## Project Structure
