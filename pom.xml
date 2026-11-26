@@ -22,7 +22,7 @@
         <dependency>
             <groupId>io.github.jiangood</groupId>
             <artifactId>open-admin</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.4-SNAPSHOT</version>
         </dependency>
         <!-- 默认数据库：H2 文件模式（零外部依赖，开箱即用，适合一键部署镜像） -->
         <dependency>
@@ -58,6 +58,13 @@
     </build>
     <!-- 配置依赖仓库（用于下载项目依赖） -->
     <repositories>
+        <!-- 预览版（-SNAPSHOT）依赖来源；正式版不必依赖此仓库 -->
+        <repository>
+            <id>central-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases><enabled>false</enabled></releases>
+            <snapshots><enabled>true</enabled><updatePolicy>always</updatePolicy></snapshots>
+        </repository>
         <repository>
             <id>huaweicloud</id>
             <url>https://mirrors.huaweicloud.com/repository/maven/</url>
