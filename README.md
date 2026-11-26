@@ -259,7 +259,25 @@ menus:
 
 ## Configuration
 
-`spring.config.import: classpath:application-lib.yml` 引入框架默认配置。
+`spring.config.import: classpath:application-lib.yml` 引入框架默认配置。注意 import 的内容会覆盖**同一个 YAML 文档**里的配置，所以在 `application.yml` 中覆盖框架默认值时必须写在 `---` 之后：
+
+```yaml
+# 第一个文档：只放 import
+spring:
+  config:
+    import: classpath:application-lib.yml
+
+# 第二个文档：业务项目自己的配置，优先级高于 application-lib.yml
+---
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+sys:
+  title: 示例系统
+```
+
+列表型配置（如 `spring.autoconfigure.exclude`）是整体替换而非合并，覆盖时要把 lib 里的值一起写上。详见框架文档 `docs/open-admin/config.md` 的「覆盖框架默认值」。
 
 | 配置 | 说明 | 默认 |
 |---|---|---|
